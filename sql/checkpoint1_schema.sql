@@ -130,3 +130,12 @@ CREATE TABLE IF NOT EXISTS Fitness_Tracking (
     mood VARCHAR(50) NOT NULL,
     stress_level INT CHECK (stress_level BETWEEN 1 AND 10)
 );
+
+CREATE TABLE IF NOT EXISTS mood_logs (
+    mood_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    mood VARCHAR(50) NOT NULL,
+    log_date DATE NOT NULL,
+    sleep_hours FLOAT NOT NULL,
+    water_intake FLOAT NOT NULL
+);
