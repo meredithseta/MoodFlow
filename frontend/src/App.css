@@ -1,0 +1,265 @@
+.app-root {
+  min-height: 100vh;
+  background: #0d0f14;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 1400px;
+  background: linear-gradient(180deg, #2c333d, #1e242c);
+  padding: 40px 48px;
+  border-radius: 28px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  color: white;
+}
+
+.app-title {
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+.app-subtitle {
+  margin-top: 4px;
+  opacity: 0.8;
+  font-size: 15px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.primary-btn {
+  background: #00b4ff;
+  color: #002033;
+  padding: 8px 18px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+}
+
+.filter-bar {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-select {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 12px;
+  padding: 6px 12px;
+  border: none;
+}
+
+.ghost-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  border-radius: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.cards-area {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 30px;
+}
+
+.mood-card {
+  position: relative;
+  border-radius: 28px;
+  padding: 36px;
+  color: white;
+  min-height: 330px;
+  overflow: hidden;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+}
+
+.mood-circle {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.4;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mood-chip {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 5px 10px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.mood-date {
+  opacity: 0.8;
+  font-size: 13px;
+}
+
+.mood-stats {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 2;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.mood-card-footer {
+  margin-top: 28px;
+  display: flex;
+  gap: 14px;
+}
+
+.small {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.danger-btn {
+  background: #ff4d64;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* Slide-out form */
+.form-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.form-panel {
+  width: 360px;
+  background: #0f1218;
+  padding: 24px;
+  height: 100vh;
+  box-shadow: -8px 0 25px rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+}
+
+.mood-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mood-form input,
+.mood-form select {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.analytics-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.tab {
+  background: #1f2a35;
+  color: #9ebbd6;
+  border: 1px solid #324759;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tab:hover { background: #2c3e50; }
+.tab.active { background:#4aa3ff; color:white; font-weight:bold; }
+
+.data-list {
+  background:#1e2933;
+  padding:20px;
+  border-radius:8px;
+  width:60%;
+  margin:auto;
+}
+
+.list-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #334;
+}
+
+.wellness-panel {
+  margin-top: 40px;
+  background:#1b1f29;
+  padding:22px;
+  border-radius:14px;
+  color:#fff;
+  box-shadow:0 0 20px rgba(0,0,0,.4);
+}
+
+.insight-item {
+  font-size:1rem;
+  margin:6px 0;
+  opacity:.9;
+}
+
+.trend-box {
+  margin-top:40px;
+  background:#111826;
+  padding:25px;
+  border-radius:14px;
+  color:white;
+}

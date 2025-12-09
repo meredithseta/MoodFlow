@@ -143,15 +143,61 @@ CREATE TABLE IF NOT EXISTS User_profile (
     FOREIGN KEY (preferred_theme_id) REFERENCES Mood_themes(theme_id)
 );
 
-CREATE TABLE IF NOT EXISTS Lifestyle_data (
+DROP TABLE IF EXISTS Lifestyle_data;
+
+CREATE TABLE Lifestyle_data (
     lifestyle_id INT AUTO_INCREMENT PRIMARY KEY,
-    age_group VARCHAR(20) NOT NULL,
-    gender VARCHAR(20) NOT NULL,
-    sleep_hours_avg DECIMAL(4,2) DEFAULT 0.0,
-    exercise_frequency INT DEFAULT 0, -- times per week
-    diet_quality_score INT DEFAULT 0 CHECK (diet_quality_score BETWEEN 1 AND 10),
-    happiness_index INT DEFAULT 0 CHECK (happiness_index BETWEEN 1 AND 10),
-    stress_level INT DEFAULT 0 CHECK (stress_level BETWEEN 1 AND 10)
+    country VARCHAR(100),
+    age INT,
+    gender VARCHAR(20),
+    exercise_level VARCHAR(50),
+    diet_type VARCHAR(50),
+    sleep_hours FLOAT,
+    stress_level FLOAT,
+    mental_health_condition VARCHAR(100),
+    work_hours_per_week FLOAT,
+    screen_time_per_day FLOAT,
+    social_interaction_score FLOAT,
+    happiness_score FLOAT
+);
+
+CREATE TABLE IF NOT EXISTS fitlife_data (
+    fitlife_id INT AUTO_INCREMENT PRIMARY KEY,
+    date VARCHAR(50),           -- <--- not DATE anymore
+    age INT,
+    gender VARCHAR(20),
+    time_of_day VARCHAR(50),
+    activity_category VARCHAR(100),
+    sub_category VARCHAR(100),
+    activity VARCHAR(100),
+    duration_minutes INT,
+    intensity VARCHAR(30),
+    primary_emotion VARCHAR(50),
+    secondary_emotion VARCHAR(50),
+    mood_before INT,
+    mood_after INT,
+    energy_level INT,
+    stress_level INT
+);
+
+CREATE TABLE IF NOT EXISTS health_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    full_name VARCHAR(100),
+    date VARCHAR(20),
+    age INT,
+    gender VARCHAR(20),
+    height_cm FLOAT,
+    weight_kg FLOAT,
+    steps_taken INT,
+    calories_burn FLOAT,
+    hours_slept FLOAT,
+    water_intake_l FLOAT,
+    active_minutes INT,
+    heart_rate_bpm INT,
+    workout_type VARCHAR(50),
+    stress_level INT,
+    mood VARCHAR(30)
 );
 
 CREATE TABLE IF NOT EXISTS Fitness_Tracking (
