@@ -1,96 +1,103 @@
 from fastapi import APIRouter, HTTPException
-from database.connection import get_connection
-from models.mood_logs import MoodLog
+from database.connection import get_connection, log_audit_action
+from models.mood import MoodCreate
 
-router = APIRouter(prefix="/mood_logs", tags=["Mood Logs"])
-
-
-# READ all logs
-@router.get("/")
-def get_all_logs():
-    conn = get_connection()
-    cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT * FROM mood_logs")
-    result = cur.fetchall()
-    conn.close()
-    return result
-
-
-# FILTER by mood
-@router.get("/filter")
-def filter_logs(mood: str):
-    conn = get_connection()
-    cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT * FROM mood_logs WHERE mood = %s", (mood,))
-    result = cur.fetchall()
-    conn.close()
-    return result
-
+router = APIRouter(prefix="/mood", tags=["Mood Logs"])
 
 # CREATE
 @router.post("/")
-def create_log(log: MoodLog):
+def create_mood(mood: MoodCreate):
     conn = get_connection()
     cur = conn.cursor()
 
-    sql = """
-        INSERT INTO mood_logs (user_id, mood, log_date, sleep_hours, water_intake)
+    cur.execute("""
+        INSERT INTO Mood_log (user_id, mood_type_id, mood_color_hex, stress_level, notes)
         VALUES (%s, %s, %s, %s, %s)
-    """
-    values = (
-        log.user_id,
-        log.mood,
-        log.log_date,
-        log.sleep_hours,
-        log.water_intake
-    )
+    """, (mood.user_id, mood.mood_type_id, mood.mood_color_hex, mood.stress_level, mood.notes))
 
-    cur.execute(sql, values)
     conn.commit()
     new_id = cur.lastrowid
+
+    # AUDIT LOG
+    log_audit_action(mood.user_id, "INSERT", "Mood_log", new_id)
+
+    cur.close()
     conn.close()
 
-    return {"message": "Mood log created.", "mood_id": new_id}
+    return {"message": "Mood log created", "mood_log_id": new_id}
+
+
+# READ ALL FOR A USER
+@router.get("/{user_id}")
+def get_moods(user_id: int):
+    conn = get_connection()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute("""
+        SELECT m.*, t.mood_name, t.mood_intensity
+        FROM Mood_log m
+        JOIN Mood_types t ON m.mood_type_id = t.mood_type_id
+        WHERE m.user_id = %s
+        ORDER BY m.log_date DESC
+    """, (user_id,))
+
+    result = cur.fetchall()
+
+    cur.close()
+    conn.close()
+    return result
 
 
 # UPDATE
-@router.put("/{mood_id}")
-def update_log(mood_id: int, log: MoodLog):
+@router.put("/{mood_log_id}")
+def update_mood(mood_log_id: int, mood: MoodCreate):
     conn = get_connection()
     cur = conn.cursor()
 
-    sql = """
-        UPDATE mood_logs
-        SET user_id = %s,
-            mood = %s,
-            log_date = %s,
-            sleep_hours = %s,
-            water_intake = %s
-        WHERE mood_id = %s
-    """
+    cur.execute("SELECT * FROM Mood_log WHERE mood_log_id = %s", (mood_log_id,))
+    if not cur.fetchone():
+        raise HTTPException(status_code=404, detail="Mood log not found")
 
-    values = (
-        log.user_id,
-        log.mood,
-        log.log_date,
-        log.sleep_hours,
-        log.water_intake,
-        mood_id
-    )
+    cur.execute("""
+        UPDATE Mood_log
+        SET mood_type_id=%s,
+            mood_color_hex=%s,
+            stress_level=%s,
+            notes=%s
+        WHERE mood_log_id=%s
+    """, (mood.mood_type_id, mood.mood_color_hex, mood.stress_level, mood.notes, mood_log_id))
 
-    cur.execute(sql, values)
     conn.commit()
+
+    # AUDIT LOG
+    log_audit_action(mood.user_id, "UPDATE", "Mood_log", mood_log_id)
+
+    cur.close()
     conn.close()
 
-    return {"message": "Mood log updated."}
+    return {"message": "Mood log updated"}
 
 
 # DELETE
-@router.delete("/{mood_id}")
-def delete_log(mood_id: int):
+@router.delete("/{mood_log_id}")
+def delete_mood(mood_log_id: int):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM mood_logs WHERE mood_id = %s", (mood_id,))
+
+    cur.execute("SELECT user_id FROM Mood_log WHERE mood_log_id=%s", (mood_log_id,))
+    row = cur.fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Mood log not found")
+
+    user_id = row[0]
+
+    cur.execute("DELETE FROM Mood_log WHERE mood_log_id = %s", (mood_log_id,))
     conn.commit()
+
+    # AUDIT LOG
+    log_audit_action(user_id, "DELETE", "Mood_log", mood_log_id)
+
+    cur.close()
     conn.close()
-    return {"message": "Mood log deleted."}
+
+    return {"message": "Mood log deleted"}
