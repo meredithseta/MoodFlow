@@ -5,77 +5,129 @@ import mysql.connector
 conn = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="root", 
+    password="root",
     database="moodflow"
 )
 cursor = conn.cursor()
 
+def map_exercise_level(value):
+    if value is None:
+        return 0
+    v = str(value).lower()
+    if v == "low":
+        return 1
+    elif v == "medium":
+        return 3
+    elif v == "high":
+        return 5
+    else:
+        return 0
+
+
+def age_to_group(age):
+    if age is None:
+        return None
+    try:
+        age = int(age)
+    except:
+        return None
+    if age < 25:
+        return "18-24"
+    elif age < 35:
+        return "25-34"
+    elif age < 50:
+        return "35-49"
+    else:
+        return "50+"
 
 def map_stress(value):
     if isinstance(value, str):
-        value = value.strip().lower()
+        value = value.lower().strip()
         return {"low": 3, "medium": 6, "high": 9}.get(value, None)
-    return value   # if already numeric
+    return value
 
+print("\nImporting Lifestyle_data into schema")
 
-print("\n=== Importing lifestyle.csv ===")
-df1 = pd.read_csv("datasets/lifestyle.csv").replace({np.nan: None})
-for _, r in df1.iterrows():
+df_life = pd.read_csv("datasets/lifestyle.csv").replace({np.nan: None})
+
+for _, r in df_life.iterrows():
     cursor.execute("""
         INSERT INTO Lifestyle_data
-        (country, age, gender, exercise_level, diet_type, sleep_hours, stress_level,
-         mental_health_condition, work_hours_per_week, screen_time_per_day,
-         social_interaction_score, happiness_score)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            (age_group, gender, sleep_hours_avg, exercise_frequency,
+             diet_quality_score, happiness_index, stress_level)
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
     """, (
-        r['Country'], r['Age'], r['Gender'], r['Exercise Level'], r['Diet Type'],
-        r['Sleep Hours'], map_stress(r['Stress Level']), r['Mental Health Condition'],
-        r['Work Hours per Week'], r['Screen Time per Day (Hours)'],
-        r['Social Interaction Score'], r['Happiness Score']
+        age_to_group(r.get("Age")),
+        r.get("Gender"),
+        r.get("Sleep Hours"),
+        map_exercise_level(r.get("Exercise Level")),
+        None,
+        r.get("Happiness Score"),
+        map_stress(r.get("Stress Level"))
     ))
 
-print("\n=== Importing fitlife.csv ===")
-df2 = pd.read_csv("datasets/fitlife.csv").replace({np.nan: None})
+# Import fitlife into fitness_tracking
+print("\nImporting FitLife dataset into Fitness_Tracking")
 
-for _, r in df2.iterrows():
+df_fit = pd.read_csv("datasets/fitlife.csv").replace({np.nan: None})
+
+base_date = pd.to_datetime("2025-01-01")
+
+for _, r in df_fit.iterrows():
+    raw_date = r.get("Date")
+
+    try:
+        days_offset = int(raw_date)
+        fitlife_date = (base_date + pd.to_timedelta(days_offset, unit="D")).date()
+    except:
+        fitlife_date = None
+
     cursor.execute("""
-        INSERT INTO fitlife_data
-        (date, age, gender, time_of_day, activity_category, sub_category, activity,
-         duration_minutes, intensity, primary_emotion, secondary_emotion,
-         mood_before, mood_after, energy_level, stress_level)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        INSERT INTO Fitness_Tracking
+            (date, steps, calories, sleep_hours, water_intake,
+            heart_rate, mood, stress_level)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
     """, (
-        r['ID'],                   # DATE actually here
-        r['Date'],                 # AGE here
-        r['Age'],                  # GENDER here
-        r['Gender'],               # TIME OF DAY here
-        r['Activity Category'],
-        r['Sub-Category'],
-        r['Activity'],
-        r['Duration (minutes)'],
-        r['Intensity'],
-        r['Primary Emotion'],
-        r['Secondary Emotion'],
-        r['Mood Before (1-10)'],
-        r['Mood After (1-10)'],
-        r['Energy Level (1-10)'],
-        r['Stress Level (1-10)']
+        fitlife_date,
+        0,
+        0,
+        0,
+        0,
+        0,  
+        r.get("Primary Emotion"),
+        r.get("Stress Level (1-10)")
     ))
 
+# Import health dataset into fitness_tracking
+print("\nImporting health.xlsx dataset into Fitness_Tracking")
 
+df_health = pd.read_excel("datasets/health.xlsx").replace({np.nan: None})
 
-print("\n=== Importing health.xlsx ===")
-df3 = pd.read_excel("datasets/health.xlsx").replace({np.nan: None})
-for _, r in df3.iterrows():
+for _, r in df_health.iterrows():
+
+    mood = r.get("mood")
+    if mood is None:
+        mood = "Unknown"
+
     cursor.execute("""
-        INSERT INTO health_data
-        (user_id, full_name, date, age, gender, height_cm, weight_kg, steps_taken,
-         calories_burn, hours_slept, water_intake_l, active_minutes,
-         heart_rate_bpm, workout_type, stress_level, mood)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """, tuple(r.values))
+        INSERT INTO Fitness_Tracking
+            (date, steps, calories, sleep_hours, water_intake,
+             heart_rate, mood, stress_level)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+    """, (
+        r.get("date") or r.get("Date"),
+        r.get("steps_taken"),
+        r.get("calories_burn"),
+        r.get("hours_slept"),
+        r.get("water_intake_l"),
+        r.get("heart_rate_bpm"),
+        mood,
+        r.get("stress_level")
+    ))
+
 
 conn.commit()
 cursor.close()
 conn.close()
-print("\nAll datasets imported successfully\n")
+
+print("\nAll dataset imports completed successfully\n")

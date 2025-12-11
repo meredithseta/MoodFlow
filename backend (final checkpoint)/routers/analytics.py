@@ -1,14 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from database.connection import get_connection
 
-router = APIRouter(prefix="/analytics", tags=["Analytics"])
+router = APIRouter(prefix = "/analytics", tags = ["Analytics"])
 
-
-# 1. Mood vs Sleep
+# Mood vs Sleep
 @router.get("/mood-vs-sleep/{user_id}")
 def mood_vs_sleep(user_id: int):
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary = True)
 
     cur.execute("""
         SELECT 
@@ -31,11 +30,11 @@ def mood_vs_sleep(user_id: int):
     return data
 
 
-# 2. Weekly Trends
+# Weekly Trends
 @router.get("/weekly-trends/{user_id}")
 def weekly_trends(user_id: int):
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary = True)
 
     cur.execute("""
         SELECT 
@@ -57,11 +56,11 @@ def weekly_trends(user_id: int):
     return data
 
 
-# 3. Lifestyle correlation (dataset-driven)
+# Lifestyle correlation
 @router.get("/lifestyle-correlation")
 def lifestyle_correlation():
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary = True)
 
     cur.execute("""
         SELECT 
@@ -81,11 +80,11 @@ def lifestyle_correlation():
     return data
 
 
-# 4. Activity impact on mood
+# Activity impact on mood
 @router.get("/activity-impact/{user_id}")
 def activity_impact(user_id: int):
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary = True)
 
     cur.execute("""
         SELECT 
@@ -109,11 +108,11 @@ def activity_impact(user_id: int):
     return data
 
 
-# 5. Exercise impact on mood
+# Exercise impact on mood
 @router.get("/exercise-impact/{user_id}")
 def exercise_impact(user_id: int):
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary = True)
 
     cur.execute("""
         SELECT 
@@ -136,11 +135,11 @@ def exercise_impact(user_id: int):
     return data
 
 
-# 6. Daily summary (User_daily_summary)
+# Daily summary
 @router.get("/daily-summary/{user_id}")
 def daily_summary(user_id: int):
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary = True)
 
     cur.execute("""
         SELECT 

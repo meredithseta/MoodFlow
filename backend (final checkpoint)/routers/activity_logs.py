@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from database.connection import get_connection
 
-router = APIRouter(prefix="/activity", tags=["Activity Logs"])
+router = APIRouter(prefix = "/activity", tags = ["Activity Logs"])
 
 class ActivityCreate(BaseModel):
     user_id: int
@@ -12,8 +12,7 @@ class ActivityCreate(BaseModel):
 class ActivityUpdate(BaseModel):
     duration_minutes: int
 
-
-# CREATE
+# Create
 @router.post("/")
 def create_activity(activity: ActivityCreate):
     conn = get_connection()
@@ -32,11 +31,11 @@ def create_activity(activity: ActivityCreate):
     return {"message": "Activity logged", "activity_log_id": new_id}
 
 
-# READ ALL FOR A USER
+# Read all activity logs for a user
 @router.get("/{user_id}")
 def get_activity(user_id: int):
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary = True)
 
     cur.execute("""
         SELECT a.*, t.activity_name, t.category
@@ -52,7 +51,7 @@ def get_activity(user_id: int):
     return rows
 
 
-# UPDATE
+# Update
 @router.put("/{activity_log_id}")
 def update_activity(activity_log_id: int, data: ActivityUpdate):
     conn = get_connection()
@@ -60,7 +59,7 @@ def update_activity(activity_log_id: int, data: ActivityUpdate):
 
     cur.execute("SELECT * FROM Activity_log WHERE activity_log_id = %s", (activity_log_id,))
     if not cur.fetchone():
-        raise HTTPException(status_code=404, detail="Activity log not found")
+        raise HTTPException(status_code = 404, detail = "Activity log not found")
 
     cur.execute("""
         UPDATE Activity_log
@@ -75,7 +74,7 @@ def update_activity(activity_log_id: int, data: ActivityUpdate):
     return {"message": "Activity log updated"}
 
 
-# DELETE
+# Delete
 @router.delete("/{activity_log_id}")
 def delete_activity(activity_log_id: int):
     conn = get_connection()

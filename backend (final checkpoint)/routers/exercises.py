@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from database.connection import get_connection
 
-router = APIRouter(prefix="/exercise", tags=["Exercise Logs"])
+router = APIRouter(prefix = "/exercise", tags = ["Exercise Logs"])
 
 class ExerciseCreate(BaseModel):
     user_id: int
@@ -14,7 +14,7 @@ class ExerciseUpdate(BaseModel):
     completed: bool | None = None
 
 
-# CREATE
+# Create
 @router.post("/")
 def log_exercise(ex: ExerciseCreate):
     conn = get_connection()
@@ -33,11 +33,11 @@ def log_exercise(ex: ExerciseCreate):
     return {"message": "Exercise logged", "user_exercise_id": new_id}
 
 
-# READ (all exercise logs for a user)
+# Read all exercise logs for a user
 @router.get("/{user_id}")
 def get_exercise_logs(user_id: int):
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary = True)
 
     cur.execute("""
         SELECT uel.*, e.exercise_name, e.category
@@ -54,7 +54,7 @@ def get_exercise_logs(user_id: int):
     return rows
 
 
-# UPDATE (notes or completed)
+# Update
 @router.put("/{log_id}")
 def update_exercise(log_id: int, update: ExerciseUpdate):
     conn = get_connection()
@@ -62,7 +62,7 @@ def update_exercise(log_id: int, update: ExerciseUpdate):
 
     cur.execute("SELECT * FROM User_exercise_log WHERE user_exercise_id = %s", (log_id,))
     if not cur.fetchone():
-        raise HTTPException(status_code=404, detail="Exercise log not found")
+        raise HTTPException(status_code = 404, detail = "Exercise log not found")
 
     cur.execute("""
         UPDATE User_exercise_log
@@ -78,7 +78,7 @@ def update_exercise(log_id: int, update: ExerciseUpdate):
     return {"message": "Exercise log updated"}
 
 
-# DELETE
+# Delete
 @router.delete("/{log_id}")
 def delete_exercise(log_id: int):
     conn = get_connection()
