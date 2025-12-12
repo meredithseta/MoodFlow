@@ -195,3 +195,15 @@ CREATE TABLE IF NOT EXISTS Audit_log (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
+
+INSERT INTO Mood_types (mood_name, mood_intensity) VALUES
+('Very Sad', 1),
+('Sad', 2),
+('Anxious', 3),
+('Tired', 4),
+('Neutral', 5),
+('Calm', 6),
+('Content', 7),
+('Happy', 8),
+('Excited', 9),
+('Elated', 10);
