@@ -2,6 +2,21 @@
 CS 3620 Team Project - Mood Tracker App
 Meredith Seta & Seth Nelson
 
+Project Goal:
+    - The goal of Moodflow is to give users a foundation for a mental health tracking app by letting users log mood entries and store them in an organized relational database. This project focuses on data modeling, backend integration, and user input, while allowing for the potential of expanding the app in the future to include analytics and recommendations.
+
+Provided Interactions:
+    - Users can create an account and log in through backend authentication, which is required to store mood logs
+    - Users can create mood logs which includes mood type, mood intensity, and stress levels
+    - Submitted mood entries are stored in a relational database
+    - The backend supports additional data types like sleep and lifestyle data, but are not fully exposed in the front end due to timing constraints.
+
+Video Demo + Demo Screenshot:
+    - Located in /moodflow/demo
+
+ER Diagram
+    - Located in /moodflow/ER_diagram
+
 Public Datasets Used:
 1. Mental Health and Lifestyle Habits Dataset (2019-2024)
     - Source: Kaggle
