@@ -17,20 +17,21 @@ Public Datasets Used:
 
 Setup/Run Instructions (Run these in order):
 1. cd backend/database
-1. mysql -u root -p
+2. mysql -u root -p
     - user: root
     - password: root
-2. SOURCE moodflow_schema.sql;
-3. EXIT;
-3. cd ..
-5. pip install fastapi uvicorn mysql-connector-python pandas openpyxl
-4. python3 import_datasets.py
-6. uvicorn main:app --reload
+3. SOURCE moodflow_schema.sql;
+4. USE moodflow;
+5. EXIT;
+6. cd ..
+7. pip install fastapi uvicorn mysql-connector-python pandas openpyxl
+8. python3 import_datasets.py
+9. uvicorn main:app --reload
     - API root: http://127.0.0.1:8000
     - Swagger UI: http://127.0.0.1:8000/docs
-7. cd ../frontend
-7. npm install
-8. npm start
+10. cd ../frontend
+11. npm install
+12. npm start
     - Frontend UI: http://localhost:3000
     - If it loads or spins forever, try running it in an incognito window.
       Google extensions were giving me issues running it, but it worked in incognito.
