@@ -9,6 +9,16 @@ CREATE TABLE IF NOT EXISTS Users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS Sleep_quality (
+    sleep_quality_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    date DATE NOT NULL,
+    hours_slept DECIMAL(4,2) NOT NULL,
+    quality_score INT CHECK (quality_score BETWEEN 1 AND 10),
+    dream_intensity INT CHECK (dream_intensity BETWEEN 1 AND 10),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
 CREATE TABLE IF NOT EXISTS Mood_types (
     mood_type_id INT AUTO_INCREMENT PRIMARY KEY,
     mood_name VARCHAR(50) NOT NULL UNIQUE,
@@ -88,6 +98,31 @@ CREATE TABLE IF NOT EXISTS Mood_log (
     FOREIGN KEY (mood_type_id) REFERENCES Mood_types(mood_type_id)
 );
 
+CREATE TABLE IF NOT EXISTS Triggers (
+    trigger_id INT AUTO_INCREMENT PRIMARY KEY,
+    trigger_name VARCHAR(100) NOT NULL,
+    trigger_category VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Mood_triggers_bridge (
+    mood_log_id INT NOT NULL,
+    trigger_id INT NOT NULL,
+    PRIMARY KEY (mood_log_id, trigger_id),
+    FOREIGN KEY (mood_log_id) REFERENCES Mood_log(mood_log_id),
+    FOREIGN KEY (trigger_id) REFERENCES Triggers(trigger_id)
+);
+
+CREATE TABLE IF NOT EXISTS Mood_predictions (
+    prediction_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    predicted_mood_type_id INT NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    confidence DECIMAL(5,2) CHECK (confidence BETWEEN 0 AND 10),
+    model_version VARCHAR(50),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (predicted_mood_type_id) REFERENCES Mood_types(mood_type_id)
+);
+
 CREATE TABLE IF NOT EXISTS Mood_themes (
     theme_id INT AUTO_INCREMENT PRIMARY KEY,
     mood_type_id INT NOT NULL,
@@ -131,11 +166,32 @@ CREATE TABLE IF NOT EXISTS Fitness_Tracking (
     stress_level INT CHECK (stress_level BETWEEN 1 AND 10)
 );
 
-CREATE TABLE IF NOT EXISTS mood_logs (
-    mood_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Mindfulness_exercises (
+    exercise_id INT AUTO_INCREMENT PRIMARY KEY,
+    exercise_name VARCHAR(100) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    duration_minutes INT NOT NULL,
+    difficulty_level INT CHECK (difficulty_level BETWEEN 1 AND 5),
+    description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS User_exercise_log (
+    user_exercise_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    mood VARCHAR(50) NOT NULL,
-    log_date DATE NOT NULL,
-    sleep_hours FLOAT NOT NULL,
-    water_intake FLOAT NOT NULL
+    exercise_id INT NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed BOOLEAN DEFAULT TRUE,
+    notes TEXT,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (exercise_id) REFERENCES Mindfulness_exercises(exercise_id)
+);
+
+CREATE TABLE IF NOT EXISTS Audit_log (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    action VARCHAR(255) NOT NULL,
+    table_name VARCHAR(100),
+    record_id INT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
